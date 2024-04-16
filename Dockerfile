@@ -1,18 +1,22 @@
-FROM golang:1.18.1-alpine3.15 as builder
+FROM golang:1.22.2-alpine3.19 as builder
 
 LABEL maintainer="erguotou525@gmail.compute"
 
-RUN apk --no-cache add git libc-dev gcc
+WORKDIR /app
+COPY ./go.mod .
+COPY ./go.sum .
+
+RUN go mod download
 RUN go install github.com/mjibson/esc@latest # TODO: Consider using native file embedding
 
-COPY . /go/src/github.com/mailslurper/mailslurper
-WORKDIR /go/src/github.com/mailslurper/mailslurper/cmd/mailslurper
+COPY . .
+WORKDIR cmd/mailslurper
 
-RUN go get
+RUN go mod tidy
 RUN go generate
-RUN go build
+RUN go build -o mailslurper
 
-FROM alpine:3.15
+FROM alpine:3.19.1
 
 RUN apk add --no-cache ca-certificates \
  && echo -e '{\n\
@@ -39,7 +43,7 @@ RUN apk add --no-cache ca-certificates \
   }'\
   >> config.json
 
-COPY --from=builder /go/src/github.com/mailslurper/mailslurper/cmd/mailslurper/mailslurper mailslurper
+COPY --from=builder /app/cmd/mailslurper/mailslurper mailslurper
 
 EXPOSE 8080 8085 2500
 
