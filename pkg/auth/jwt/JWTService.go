@@ -16,7 +16,7 @@ import (
 
 	"golang.org/x/crypto/pbkdf2"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/mailslurper/mailslurper/pkg/mailslurper"
 	"github.com/pkg/errors"
 )
@@ -35,8 +35,8 @@ MailSlurper services
 */
 func (s *JWTService) CreateToken(authSecret, user string) (string, error) {
 	claims := &Claims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(s.Config.AuthTimeoutInMinutes)).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(s.Config.AuthTimeoutInMinutes))),
 			Issuer:    JWTIssuer,
 		},
 		User: user,
@@ -109,7 +109,10 @@ func (s *JWTService) EncryptToken(token string) (string, error) {
 	}
 
 	nonce = make([]byte, gcm.NonceSize())
-	io.ReadFull(rand.Reader, nonce)
+	_, err = io.ReadFull(rand.Reader, nonce)
+	if err != nil {
+		return "", errors.Wrapf(err, "Problem creating nonce")
+	}
 
 	encryptedResult = gcm.Seal(nonce, nonce, []byte(token), nil)
 	encodedResult := base64.StdEncoding.EncodeToString(encryptedResult)
@@ -165,10 +168,10 @@ func (s *JWTService) Parse(tokenFromHeader, authSecret string) (*jwt.Token, erro
 /*
 IsTokenValid returns an error if there are any issues with the
 provided JWT token. Possible issues include:
-	* Missing claims
-	* Invalid token format
-	* Invalid issuer
-	* User doesn't have a corresponding entry in the credentials table
+  - Missing claims
+  - Invalid token format
+  - Invalid issuer
+  - User doesn't have a corresponding entry in the credentials table
 */
 func (s *JWTService) IsTokenValid(token *jwt.Token) error {
 	var claims *Claims
@@ -184,7 +187,7 @@ func (s *JWTService) IsTokenValid(token *jwt.Token) error {
 		return ErrInvalidToken
 	}
 
-	if claims.Issuer != JWTIssuer {
+	if issuer, err := claims.GetIssuer(); err != nil || issuer != JWTIssuer {
 		return ErrInvalidIssuer
 	}
 

@@ -135,7 +135,7 @@ GetPublicWWWURL returns a full protocol, address and port for the web applicatio
 */
 func (config *Configuration) GetPublicWWWURL() string {
 	if config.WWWPublicURL != "" {
-		return config.WWWPublicURL
+		return ""
 	}
 
 	result := "http"

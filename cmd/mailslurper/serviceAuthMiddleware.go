@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/mailslurper/mailslurper/pkg/auth/authscheme"
 	jwtservice "github.com/mailslurper/mailslurper/pkg/auth/jwt"

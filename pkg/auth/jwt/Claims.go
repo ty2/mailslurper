@@ -7,7 +7,7 @@ package jwt
 import (
 	"fmt"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var JWTIssuer string = "mailslurper"
@@ -17,6 +17,6 @@ var ErrInvalidUser error = fmt.Errorf("Invalid user")
 var ErrInvalidIssuer error = fmt.Errorf("Invalid issuer")
 
 type Claims struct {
-	jwt.StandardClaims
-	User string `json:"user"`
+	jwt.RegisteredClaims `json:"claims"`
+	User                 string `json:"user"`
 }

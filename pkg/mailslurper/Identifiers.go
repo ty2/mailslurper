@@ -5,13 +5,13 @@
 package mailslurper
 
 import (
-	"github.com/nu7hatch/gouuid"
+	"github.com/google/uuid"
 )
 
 /*
 GenerateID creates a UUID ID for database records.
 */
 func GenerateID() (string, error) {
-	id, err := uuid.NewV4()
+	id, err := uuid.NewRandom()
 	return id.String(), err
 }
