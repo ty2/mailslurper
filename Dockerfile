@@ -2,6 +2,8 @@ FROM golang:1.22.2-alpine3.19 as builder
 
 LABEL maintainer="erguotou525@gmail.compute"
 
+RUN apk --no-cache add build-base
+
 WORKDIR /app
 COPY ./go.mod .
 COPY ./go.sum .
@@ -14,8 +16,6 @@ WORKDIR cmd/mailslurper
 
 RUN go mod tidy
 RUN go generate
-
-RUN apk --no-cache add build-base
 
 RUN CGO_ENABLED=1 go build -o mailslurper
 
