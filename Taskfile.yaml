@@ -19,7 +19,7 @@ tasks:
     cmds:
       - mkdir -p dist/oci
       - docker buildx build --builder=builderx
-        --platform=linux/arm64
+        --platform=linux/arm64,linux/amd64
         -f Dockerfile .
         -t mailslurper:latest
         --output=type=oci,dest=dist/oci/image.tar
