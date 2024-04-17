@@ -9,8 +9,8 @@ import (
 	"sync"
 
 	"github.com/gorilla/sessions"
-	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo-contrib/session"
+	"github.com/labstack/echo/v4"
 	"github.com/mailslurper/mailslurper/pkg/auth/auth"
 	"github.com/mailslurper/mailslurper/pkg/auth/authfactory"
 	"github.com/mailslurper/mailslurper/pkg/cache"
@@ -210,7 +210,7 @@ func (c *AdminController) PerformLogin(ctx echo.Context) error {
 	s, _ := session.Get("session", ctx)
 	s.Options = &sessions.Options{
 		Path:   "/",
-		MaxAge: c.Config.AuthTimeoutInMinutes,
+		MaxAge: c.Config.AuthTimeoutInMinutes * 60,
 	}
 	s.Values["user"] = credentials.UserName
 
