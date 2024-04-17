@@ -14,6 +14,9 @@ WORKDIR cmd/mailslurper
 
 RUN go mod tidy
 RUN go generate
+
+RUN apk --no-cache add build-base
+
 RUN CGO_ENABLED=1 go build -o mailslurper
 
 FROM alpine:3.19.1
