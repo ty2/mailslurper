@@ -3,8 +3,14 @@
 // that can be found in the LICENSE file.
 
 $(document).ready(function () {
+	$.ajaxSetup({
+		xhrFields: {
+			withCredentials: true
+		}
+	});
+
 	var appURL = window.SettingsService.getAppURL();
-	
+
 	if (!window.SettingsService.serviceSettingsExistInLocalStore()) {
 		window.SettingsService.getServiceSettings()
 			.then(function (serviceSettings) {
