@@ -12,6 +12,7 @@ import (
 	"github.com/mailslurper/mailslurper/pkg/auth/authscheme"
 	"github.com/mailslurper/mailslurper/pkg/auth/jwt"
 	"github.com/mailslurper/mailslurper/pkg/mailslurper"
+	"net/http"
 )
 
 func setupServicesListener() {
@@ -41,7 +42,11 @@ func setupServicesListener() {
 		middlewares = append(middlewares, serviceAuthorization)
 	}
 
-	service.Use(middleware.CORS())
+	service.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		Skipper:      middleware.DefaultSkipper,
+		AllowOrigins: []string{"*", config.ServicePublicURL},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+	}))
 
 	service.HEAD("/", serviceController.Head, middlewares...)
 	service.HEAD("/mail", serviceController.Head, middlewares...)
